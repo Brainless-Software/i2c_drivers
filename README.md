@@ -1,4 +1,4 @@
-# I2C Drivers
+# I²C Drivers
 
 Implementations of [i2c_api](https://brainless-software.github.io/i2c_api/) (Python) for various dongles.
 Following dongles are supported:
