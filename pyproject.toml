@@ -1,0 +1,47 @@
+[project]
+name = "i2c-drivers"
+dynamic = ["version"]
+description = "Drivers implementing i2c_api"
+readme = "README.md"
+authors = [
+    { name = "Dmitri Priimak", email = "priimak@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "easymcp2221 >=1.8.4, <2.0.0",
+    "i2c-api",
+    "i2cdriver >=1.0.6, < 2.0.0",
+]
+
+[build-system]
+requires = ["setuptools", "wheel", "setuptools-git-versioning"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools-git-versioning]
+enabled = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "F", # Pyflakes
+    "E", # pycodestyle
+    "W", # pycodestyle
+    "B", # flake8-bugbear
+    "I", # isort
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.7",
+]
+[tool.uv.sources]
+i2c-api = { git = "https://github.com/priimak/i2c_api.git", rev = "v0.18.1" }
