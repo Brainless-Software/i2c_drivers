@@ -2,6 +2,7 @@ from bitstring import BitArray
 from i2c_api import I2CLogger, I2CMaster, I2CTransactionBuilder, RegisterAddress
 from i2c_api.log import I2CTransactionElement
 
+from i2c_drivers.ft232h import I2CMasterFT232H
 from i2c_drivers.i2cdriver import I2CMasterI2CDriver
 from i2c_drivers.mcp2221 import I2CMasterMCP2221
 
@@ -74,4 +75,9 @@ def test_i2cdriver():
 
 def test_mcp2221():
     with I2CMasterMCP2221(ALogger()) as master:
+        i2cmaster_check(master)
+
+
+def test_ft232h():
+    with I2CMasterFT232H(logger=ALogger()) as master:
         i2cmaster_check(master)

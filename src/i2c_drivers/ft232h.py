@@ -1,7 +1,7 @@
-from bitstring import BitArray, Bits
+from bitstring import BitArray
 from i2c_api import ExecResults, I2CLogger, I2CMaster, I2CTransaction
-from i2c_api.log import I2CTransactionElement
-from pyftdi.i2c import I2cController, I2cIOError
+from i2c_api.commands import Address, Data, P, Read, S, Sr, W
+from pyftdi.i2c import I2cController
 
 
 class I2CMasterFT232H(I2CMaster):
@@ -11,38 +11,55 @@ class I2CMasterFT232H(I2CMaster):
         self.driver.configure(url, frequency=100000)
         self.__speed = 100
 
-    def _write(
-        self,
-        address: int,
-        *,
-        data: Bits | str | int | list[int],
-        log_msg: list[I2CTransactionElement],
-        num_bytes: int | None,
-        end_with_stop: bool,
-        start_with_restart: bool,
-    ) -> bool:
-        try:
-            self.driver.write(address, I2CMaster.mk_payload(data, num_bytes).bytes, relax=(not end_with_stop))
-            return True
-        except I2cIOError:
-            return False
-
-    def _read(
-        self,
-        address: int,
-        *,
-        num_bytes: int,
-        log_msg: list[I2CTransactionElement],
-        end_with_stop: bool,
-        start_with_restart: bool,
-    ) -> Bits | None:
-        try:
-            return BitArray(self.driver.read(address, readlen=num_bytes, relax=(not end_with_stop)))
-        except I2cIOError:
-            return None
-
     def _exec(self, transaction: I2CTransaction, device_address: int = -1) -> ExecResults:
-        pass
+        device_address = -1
+        action = ""
+        data_out = []
+        num_bytes_to_read = -1
+        failure = []
+        response_data: list[list[BitArray]] = []
+
+        def write_call(device_address: int, data_out: list[int], stop: bool) -> None:
+            try:
+                self.driver.write(device_address, data_out, relax=stop)
+            except Exception as ex:
+                failure.append(ex)
+
+        def read_call(device_address: int, num_bytes_to_read: int, stop: bool) -> None:
+            try:
+                response = self.driver.read(device_address, num_bytes_to_read, relax=stop)
+                response_data.append([BitArray(f"uint:8={b}") for b in response])
+            except Exception as ex:
+                failure.append(ex)
+
+        for cmd in transaction._i2c._i2c_commands:
+            match cmd:
+                case S():
+                    pass
+                case Address(address):
+                    device_address = address
+                case W():
+                    action = "write"
+                case Data(data):
+                    data_out.append(data)
+                case Sr():
+                    if action == "write":
+                        write_call(device_address, data_out, stop=False)
+                    else:  # read
+                        read_call(device_address, num_bytes_to_read, stop=False)
+                    if any(failure):
+                        return ExecResults(response_data, is_success=False)
+                case Read(num_bytes):
+                    num_bytes_to_read = num_bytes
+                    action = "read"
+                case P():
+                    if action == "write":
+                        write_call(device_address, data_out, stop=True)
+                    else:  # read
+                        read_call(device_address, num_bytes_to_read, stop=True)
+                    return ExecResults(response_data, is_success=not any(failure))
+
+        return ExecResults([], is_success=False)
 
     def scan(self) -> list[int]:
         devices: list[int] = []
@@ -77,13 +94,6 @@ class I2CMasterFT232H(I2CMaster):
             self.__speed = speed
         else:
             raise ValueError("Unsupported clock speed")
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-        return False
 
     def close(self):
         self.driver.close()
