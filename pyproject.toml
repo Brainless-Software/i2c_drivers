@@ -8,9 +8,11 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "bitstring >= 5.0.0, < 6.0.0",
     "easymcp2221 >=1.8.4, <2.0.0",
     "i2c-api",
     "i2cdriver >=1.0.6, < 2.0.0",
+    "pyftdi>=0.57.2",
 ]
 
 [build-system]
@@ -44,4 +46,4 @@ dev = [
     "mkdocs-material>=9.7.7",
 ]
 [tool.uv.sources]
-i2c-api = { git = "https://github.com/priimak/i2c_api.git", rev = "v0.18.1" }
+i2c-api = { git = "https://github.com/priimak/i2c_api.git", rev = "v0.19.2" }

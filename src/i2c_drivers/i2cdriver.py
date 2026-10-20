@@ -1,10 +1,9 @@
-from functools import partial
+from functools import partial, reduce
 from typing import override
 
 from bitstring import BitArray, Bits
-from i2c_api import ExecResults, I2CError, I2CLogger, I2CMaster, I2CTransaction
+from i2c_api import ExecResults, I2CLogger, I2CMaster, I2CTransaction
 from i2c_api.commands import Address, Data, P, Read, S, Sr, W
-from i2c_api.log import I2CMessage, I2CTransactionElement
 from i2cdriver import I2CDriver
 
 
@@ -20,96 +19,7 @@ class I2CMasterI2CDriver(I2CMaster):
         super().__init__(logger)
 
         self.driver = I2CDriver(port, reset)
-        self._pullup_codes = [
-            "disabled",
-            "2.2K",
-            "4.3K",
-            "1.5K",
-            "4.7K",
-            "1.5K",
-            "2.2K",
-            "1.1K",
-        ]
-        self._pullup_values = ["disabled", "4.7K", "4.3K", "2.2K", "1.5K", "1.1K"]
-
-    @override
-    def _write(
-        self,
-        address: int,
-        *,
-        data: Bits | str | int | list[int],
-        log_msg: list[I2CTransactionElement],
-        num_bytes: int | None,
-        end_with_stop: bool,
-        start_with_restart: bool,
-    ) -> bool:
-        if address < 0:
-            raise I2CError("Invalid i2c device address")
-
-        payload = I2CMaster.mk_payload(data, num_bytes)
-        try:
-            if start_with_restart:
-                log_msg.append(I2CMessage.RESTART)
-            else:
-                log_msg.append(I2CMessage.START)
-
-            log_msg.append(I2CMessage.DATA_MOSI(BitArray(f"uint:7={address}")))
-            log_msg.append(I2CMessage.WRITE)
-            if not self.driver.start(address, 0):
-                log_msg.append(I2CMessage.NACK)
-                return False
-            log_msg.append(I2CMessage.ACK)
-
-            bdata = [BitArray(f"uint:8={x}") for x in payload.tobytes()]
-            if self.driver.write(payload.bytes):
-                for data in bdata:
-                    log_msg.append(I2CMessage.DATA_MOSI(data))
-                    log_msg.append(I2CMessage.ACK)
-                return True
-            else:
-                log_msg.append(I2CMessage.DATA_MOSI(bdata[0]))
-                log_msg.append(I2CMessage.NACK)
-                return False
-        finally:
-            if end_with_stop:
-                self.driver.stop()
-                log_msg.append(I2CMessage.STOP)
-
-    @override
-    def _read(
-        self,
-        address: int,
-        *,
-        num_bytes: int,
-        log_msg: list[I2CTransactionElement],
-        end_with_stop: bool,
-        start_with_restart: bool,
-    ) -> Bits | None:
-        if address < 0:
-            raise I2CError("Invalid i2c device address")
-
-        try:
-            if start_with_restart:
-                log_msg.append(I2CMessage.RESTART)
-            else:
-                log_msg.append(I2CMessage.START)
-            log_msg.append(I2CMessage.DATA_MOSI(BitArray(f"uint:7={address}")))
-            log_msg.append(I2CMessage.READ)
-            if not self.driver.start(address, 1):
-                log_msg.append(I2CMessage.NACK)
-                return None
-            else:
-                log_msg.append(I2CMessage.ACK)
-                data_from_the_client = Bits(self.driver.read(num_bytes))
-                bdata = [BitArray(f"uint:8={x}") for x in data_from_the_client.tobytes()]
-                for data in bdata:
-                    log_msg.append(I2CMessage.DATA_MISO(data))
-                    log_msg.append(I2CMessage.ACK)
-                return data_from_the_client
-        finally:
-            if end_with_stop:
-                self.driver.stop()
-                log_msg.append(I2CMessage.STOP)
+        self.__pullup_codes = ["disabled", "2.2K", "4.3K", "1.5K", "4.7K", "1.5K", "2.2K", "1.1K"]
 
     @override
     def _exec(self, transaction: I2CTransaction, device_address: int = -1) -> ExecResults:
@@ -180,7 +90,9 @@ class I2CMasterI2CDriver(I2CMaster):
                 else:
                     break
 
-            return ExecResults(data=[[c.uint for c in d] for d in data_rsp], is_success=(nack == []))
+            return ExecResults(
+                data=[[BitArray(f"uint:8={c.uint}") for c in d] for d in data_rsp], is_success=(nack == [])
+            )
         finally:
             if stop_called == []:
                 self.driver.stop()
@@ -191,19 +103,19 @@ class I2CMasterI2CDriver(I2CMaster):
 
     @override
     def list_pullups(self) -> list[str]:
-        return self._pullup_values
+        return ["disabled", "4.7K", "4.3K", "2.2K", "1.5K", "1.1K"]
 
     @override
     def set_pullup(self, pullup_value: str) -> None:
-        if pullup_value in self._pullup_values:
-            code = self._pullup_codes.index(pullup_value)
+        if pullup_value in self.list_pullups():
+            code = self.__pullup_codes.index(pullup_value)
             self.driver.setpullups(code | code << 3)
         else:
             raise ValueError("Invalid pullup resistor value.")
 
     @override
     def get_pullup(self) -> str:
-        return self._pullup_codes[self.driver.pullups & 7]
+        return self.__pullup_codes[self.driver.pullups & 7]
 
     @override
     def list_clk_speeds(self) -> list[int]:
@@ -219,3 +131,6 @@ class I2CMasterI2CDriver(I2CMaster):
             self.driver.setspeed(speed)
         else:
             raise ValueError("Invalid clock speed value. Only 100 and 400 are allowed for this device.")
+
+    def close(self):
+        pass
