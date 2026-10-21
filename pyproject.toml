@@ -1,5 +1,5 @@
 [project]
-name = "i2c-drivers"
+name = "i2c_drivers"
 dynamic = ["version"]
 description = "Drivers implementing i2c_api"
 readme = "README.md"
