@@ -19,4 +19,4 @@ To add this library to your project do
 uv add i2c_drivers
 ```
 
-On how to use these drivers see documentation for [i2c_api](https://brainless-software.github.io/i2c_api/).
+On how to use these drivers see documentation for [i2c-api](https://brainless-software.github.io/i2c_api/).
