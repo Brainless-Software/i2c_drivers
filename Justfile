@@ -13,3 +13,6 @@ test-cov-mcp2221:
 
 test-cov-i2cdriver:
     pytest --cov=i2c_drivers --rootdir=src --cov-report=html tests/test.py::test_i2cdriver ; xdg-open htmlcov/index.html
+
+test-cov-ft232h:
+    pytest --cov=i2c_drivers --rootdir=src --cov-report=html tests/test.py::test_ft232h ; xdg-open htmlcov/index.html
