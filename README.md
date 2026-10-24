@@ -1,7 +1,7 @@
 # I²C Drivers
 
 [![License - MIT](https://img.shields.io/badge/License-MIT-blue)](https://github.com/Brainless-Software/i2c_drivers/blob/master/LICENSE)
-[![PyPI Latest Release](https://img.shields.io/pypi/v/i2c-api.svg)](https://pypi.org/project/i2c-drivers/)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/i2c-drivers.svg)](https://pypi.org/project/i2c-drivers/)
 
 Implementations of [i2c_api](https://brainless-software.github.io/i2c_api/) (Python) for various dongles.
 Dongles are usually USB-to-I2C bridges that act as I2C master devices and allows one to talk I2C slave devices present
