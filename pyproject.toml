@@ -38,7 +38,7 @@ select = [
 ]
 
 [tool.uv.sources]
-i2c-api = { git = "https://github.com/priimak/i2c_api.git", rev = "master" }
+i2c-api = { git = "https://github.com/priimak/i2c_api.git", rev = "v0.20.0" }
 
 [dependency-groups]
 dev = [
