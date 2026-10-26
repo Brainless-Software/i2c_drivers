@@ -328,7 +328,7 @@ wheels = [
 [[package]]
 name = "i2c-api"
 version = "0.19.2.post21+git.4d260fe0"
-source = { git = "https://github.com/priimak/i2c_api.git?rev=v0.20.0#4d260fe05c5b5f48ce0310a7e266e55dd9d228d4" }
+source = { git = "https://github.com/brainless-software/i2c_api.git?rev=v0.20.0#4d260fe05c5b5f48ce0310a7e266e55dd9d228d4" }
 dependencies = [
     { name = "bitstring" },
 ]
@@ -357,7 +357,7 @@ dev = [
 requires-dist = [
     { name = "bitstring", specifier = ">=5.0.0,<6.0.0" },
     { name = "easymcp2221", specifier = ">=1.8.4,<2.0.0" },
-    { name = "i2c-api", git = "https://github.com/priimak/i2c_api.git?rev=v0.20.0" },
+    { name = "i2c-api", git = "https://github.com/brainless-software/i2c_api.git?rev=v0.20.0" },
     { name = "i2cdriver", specifier = ">=1.0.6,<2.0.0" },
     { name = "pyftdi", specifier = ">=0.57.2" },
 ]
