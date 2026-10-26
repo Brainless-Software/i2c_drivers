@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.13"
 
 [[package]]
@@ -327,14 +327,10 @@ wheels = [
 
 [[package]]
 name = "i2c-api"
-version = "0.20.0"
-source = { registry = "https://pypi.org/simple" }
+version = "0.19.2.post21+git.4d260fe0"
+source = { git = "https://github.com/priimak/i2c_api.git?rev=master#4d260fe05c5b5f48ce0310a7e266e55dd9d228d4" }
 dependencies = [
     { name = "bitstring" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/4c/41/006214ecc40d2f58146346618f1d86d04a9f012381c098317714da263949/i2c_api-0.20.0.tar.gz", hash = "sha256:4856bad51e90f83d56263bb980fb712ccd548fec9bac85ea8ed69397468afb92", size = 9586, upload-time = "2026-10-23T23:09:04.409Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3c/c5/1ad06106ff1055af850a597a491036f31025e4338caa3ad64104c0c55f6a/i2c_api-0.20.0-py3-none-any.whl", hash = "sha256:5531c82e64290db2a81861f5713489526a8a49d3e120844e117de2055b3b3514", size = 9592, upload-time = "2026-10-23T23:09:02.977Z" },
 ]
 
 [[package]]
@@ -361,7 +357,7 @@ dev = [
 requires-dist = [
     { name = "bitstring", specifier = ">=5.0.0,<6.0.0" },
     { name = "easymcp2221", specifier = ">=1.8.4,<2.0.0" },
-    { name = "i2c-api", specifier = ">=0.20.0" },
+    { name = "i2c-api", git = "https://github.com/priimak/i2c_api.git?rev=master" },
     { name = "i2cdriver", specifier = ">=1.0.6,<2.0.0" },
     { name = "pyftdi", specifier = ">=0.57.2" },
 ]
