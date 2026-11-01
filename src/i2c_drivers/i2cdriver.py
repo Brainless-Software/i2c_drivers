@@ -1,8 +1,10 @@
+import sys
 from functools import partial, reduce
 from typing import override
 
+import serial.tools.list_ports as slp
 from bitstring import BitArray, Bits
-from i2c_api import ExecResults, I2CLogger, I2CMaster, I2CTransaction
+from i2c_api import ExecResults, I2CLogger, I2CMaster, I2CMasterProvider, I2CTransaction
 from i2c_api.commands import Address, Data, P, Read, S, Sr, W
 from i2cdriver import I2CDriver
 
@@ -16,10 +18,13 @@ class I2CMasterI2CDriver(I2CMaster):
         :param reset: Issue an I2C bus reset on connection
         :param logger:
         """
-        super().__init__(logger)
+        super().__init__(port, logger)
 
         self.driver = I2CDriver(port, reset)
         self.__pullup_codes = ["disabled", "2.2K", "4.3K", "1.5K", "4.7K", "1.5K", "2.2K", "1.1K"]
+
+    def display_name(self) -> str:
+        return f"Excamera :: I2CDriver :: {self.port}"
 
     @override
     def _exec(self, transaction: I2CTransaction, device_address: int = -1) -> ExecResults:
@@ -134,3 +139,19 @@ class I2CMasterI2CDriver(I2CMaster):
 
     def close(self):
         pass
+
+
+def get_ports() -> list[str] | None:
+    if sys.platform == "linux":
+        return [p.device for p in slp.comports() if p.product == "FT230X Basic UART"]
+    else:
+        return [p.device for p in slp.comports()]
+
+
+I2CMasterProviderI2CDriver = I2CMasterProvider(
+    make="Excamera Labs",
+    model="I2CDriver",
+    new_i2c_master=lambda port, logger: I2CMasterI2CDriver(port=port, logger=logger),
+    ports_required=True,
+    list_ports=get_ports,
+)

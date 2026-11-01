@@ -1,15 +1,20 @@
 from bitstring import BitArray
-from i2c_api import ExecResults, I2CLogger, I2CMaster, I2CTransaction
+from i2c_api import ExecResults, I2CLogger, I2CMaster, I2CMasterProvider, I2CTransaction
 from i2c_api.commands import Address, Data, P, Read, S, Sr, W
+from pyftdi.ftdi import Ftdi
 from pyftdi.i2c import I2cController
+from pyftdi.usbtools import UsbTools
 
 
 class I2CMasterFT232H(I2CMaster):
     def __init__(self, url="ftdi://ftdi:232h:1/1", logger: I2CLogger | None = None) -> None:
-        super().__init__(logger)
+        super().__init__(url, logger)
         self.driver = I2cController()
         self.driver.configure(url, frequency=100000)
         self.__speed = 100
+
+    def display_name(self) -> str:
+        return f"FTDI :: FT232H :: {self.port}"
 
     def _exec(self, transaction: I2CTransaction, device_address: int = -1) -> ExecResults:
         device_address = -1
@@ -97,3 +102,20 @@ class I2CMasterFT232H(I2CMaster):
 
     def close(self):
         self.driver.close()
+
+
+def get_ports() -> list[str]:
+    return [
+        d[0]
+        for d in UsbTools.build_dev_strings("ftdi", Ftdi.VENDOR_IDS, Ftdi.PRODUCT_IDS, Ftdi.list_devices())
+        if "232h" in d[0]
+    ]
+
+
+I2CMasterProviderFT232H = I2CMasterProvider(
+    make="FTDI",
+    model="FT232H",
+    new_i2c_master=lambda port, logger: I2CMasterFT232H(port, logger),
+    ports_required=True,
+    list_ports=get_ports,
+)
