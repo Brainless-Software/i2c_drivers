@@ -7,6 +7,7 @@ from i2c_api import (
     ExecResults,
     I2CLogger,
     I2CMaster,
+    I2CMasterProvider,
 )
 from i2c_api.commands import Data, P, Read, S, Sr, W
 from i2c_api.language import I2CTransaction
@@ -14,9 +15,12 @@ from i2c_api.language import I2CTransaction
 
 class I2CMasterMCP2221(I2CMaster):
     def __init__(self, logger: I2CLogger | None = None):
-        super().__init__(logger)
+        super().__init__(None, logger)
         self.driver = EasyMCP2221.Device()
         self.__speed = 100
+
+    def display_name(self) -> str:
+        return "Microchip :: MCP2221"
 
     def close(self):
         pass
@@ -130,3 +134,11 @@ class I2CMasterMCP2221(I2CMaster):
                 nack.append(ex)
 
         return ExecResults(data=[[BitArray(f"uint:8={c.uint}") for c in d] for d in data_rsp], is_success=(nack == []))
+
+
+I2CMasterProviderMCP2221 = I2CMasterProvider(
+    make="Microchip",
+    model="MCP2221",
+    new_i2c_master=lambda port, logger: I2CMasterMCP2221(logger=logger),
+    ports_required=False
+)
