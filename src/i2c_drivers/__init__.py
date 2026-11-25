@@ -9,3 +9,5 @@ I2CAPI_IMPL: list[I2CMasterProvider] = [
     mcp2221.I2CMasterProviderMCP2221,
     ft232h.I2CMasterProviderFT232H,
 ]
+
+__all__ = ["I2CMasterFT232H", "I2CMasterI2CDriver", "I2CMasterMCP2221", "I2CAPI_IMPL"]

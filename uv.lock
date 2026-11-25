@@ -327,14 +327,14 @@ wheels = [
 
 [[package]]
 name = "i2c-api"
-version = "0.21.0"
+version = "0.22.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bitstring" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/83/b3/7eed538804957925e77d8073eea23d8c54e4c4024a15891e9dc2db97fdee/i2c_api-0.21.0.tar.gz", hash = "sha256:7bdbc453ab1cdb24e5ee7ea070c2bf63c377042b7e500709ea723957a5a5c82b", size = 10009, upload-time = "2026-11-01T01:51:19.02Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/88/6e/6eb10756577d48120a4f198ac343081c5fe177a829dc775b7c222d223323/i2c_api-0.22.0.tar.gz", hash = "sha256:e35bc02e7a0136798fa0108eb985771826c3b18d6a01086e89dc1091e3905414", size = 11130, upload-time = "2026-11-25T16:46:06.389Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5e/04/309bb2b3cec6c9fb3ec1af739d4dcdccd9e36a7aec4412fdb658e4b6f776/i2c_api-0.21.0-py3-none-any.whl", hash = "sha256:e6acb42f95283526409cd81491096ea37162becfb8e580173c3e44ce9f00e505", size = 10340, upload-time = "2026-11-01T01:51:18.068Z" },
+    { url = "https://files.pythonhosted.org/packages/be/ee/7d6ecc4e4fe3902b598a5bf888b369b53883c902a9340a1bf9fd58c9348e/i2c_api-0.22.0-py3-none-any.whl", hash = "sha256:18d201a26c19a9cf823bfe0222062469e19b6161bf2e8ba099612fbb8c3d8ef5", size = 11125, upload-time = "2026-11-25T16:46:05.568Z" },
 ]
 
 [[package]]
@@ -361,7 +361,7 @@ dev = [
 requires-dist = [
     { name = "bitstring", specifier = ">=5.0.0,<6.0.0" },
     { name = "easymcp2221", specifier = ">=1.8.4,<2.0.0" },
-    { name = "i2c-api", specifier = ">=0.21.0" },
+    { name = "i2c-api", specifier = ">=0.22.0,<2.0.0" },
     { name = "i2cdriver", specifier = ">=1.0.6,<2.0.0" },
     { name = "pyftdi", specifier = ">=0.57.2" },
 ]

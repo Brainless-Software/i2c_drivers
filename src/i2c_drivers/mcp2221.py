@@ -140,5 +140,5 @@ I2CMasterProviderMCP2221 = I2CMasterProvider(
     make="Microchip",
     model="MCP2221",
     new_i2c_master=lambda port, logger: I2CMasterMCP2221(logger=logger),
-    ports_required=False
+    ports_required=False,
 )
